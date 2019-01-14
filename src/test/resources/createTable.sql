@@ -1,0 +1,1 @@
+create table classes(id TINYINT primary key, name varchar(45) not null, Remark varchar(200) not null)
