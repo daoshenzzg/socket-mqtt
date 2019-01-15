@@ -37,6 +37,11 @@ public abstract class Service {
      */
     protected boolean tcpNoDelay = true;
     /**
+     * 工作线程池大小
+     */
+    protected int workerCount;
+
+    /**
      * 是否开户业务处理线程池
      */
     protected boolean openExecutor = false;
@@ -90,6 +95,8 @@ public abstract class Service {
     protected EventDispatcher eventDispatcher;
 
     public Service() {
+        // 默认工作线程数
+        this.workerCount = Runtime.getRuntime().availableProcessors() + 1;
         //添加JVM关闭时的勾子
         Runtime.getRuntime().addShutdownHook(new ShutdownHook(this));
     }
@@ -240,6 +247,14 @@ public abstract class Service {
 
     public void setTcpNoDelay(boolean tcpNoDelay) {
         this.tcpNoDelay = tcpNoDelay;
+    }
+
+    public int getWorkerCount() {
+        return workerCount;
+    }
+
+    public void setWorkerCount(int workerCount) {
+        this.workerCount = workerCount;
     }
 
     public boolean isOpenExecutor() {

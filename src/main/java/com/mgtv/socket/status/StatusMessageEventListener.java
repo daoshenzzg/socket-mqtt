@@ -43,7 +43,7 @@ public class StatusMessageEventListener implements MessageEventListener {
                     resultMap.put("error", "unsupported command:" + command);
                 }
 
-                channel.write(formatResultMap(resultMap), false);
+                channel.writeAndFlush(formatResultMap(resultMap), false);
             }
         }
         return EventBehavior.CONTINUE;

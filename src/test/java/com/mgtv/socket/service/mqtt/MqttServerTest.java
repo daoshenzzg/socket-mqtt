@@ -21,6 +21,7 @@ public class MqttServerTest {
         server.setPort(8000);
         server.setOpenCount(true);
         server.setCheckHeartbeat(true);
+        server.setOpenStatus(true);
         server.addEventListener(new EchoMessageEventListener());
         server.setSocketType(SocketType.MQTT);
         server.bind();

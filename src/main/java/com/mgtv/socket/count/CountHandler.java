@@ -2,6 +2,7 @@ package com.mgtv.socket.count;
 
 import com.mgtv.socket.service.server.Server;
 import com.mgtv.socket.service.server.ServerContext;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
@@ -12,6 +13,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
  * @author zhiguang@mgtv.com
  * @date 2019/1/11 16:53
  */
+@ChannelHandler.Sharable
 public class CountHandler extends ChannelInboundHandlerAdapter {
 
     @Override

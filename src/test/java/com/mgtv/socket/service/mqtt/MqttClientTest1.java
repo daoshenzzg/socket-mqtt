@@ -15,7 +15,7 @@ public class MqttClientTest1 {
     public static void main(String[] args) {
         final String broker = "tcp://127.0.0.1:8000";
         final String clientId = "GID_XXX@@@ClientID_123";
-        final String topic = "/mgtv/notice";
+        final String topic = "mgtv/notice/";
         MemoryPersistence persistence = new MemoryPersistence();
         try {
             final MqttClient sampleClient = new MqttClient(broker, clientId, persistence);

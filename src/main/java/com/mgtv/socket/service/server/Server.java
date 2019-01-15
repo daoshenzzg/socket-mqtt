@@ -127,8 +127,41 @@ public class Server extends Service {
     @Override
     protected void init() {
         super.init();
-        bossGroup = useEpoll() ? new EpollEventLoopGroup() : new NioEventLoopGroup();
-        workerGroup = useEpoll() ? new EpollEventLoopGroup() : new NioEventLoopGroup();
+        if (useEpoll()) {
+            bossGroup = new EpollEventLoopGroup(workerCount, new ThreadFactory() {
+                private AtomicInteger index = new AtomicInteger(0);
+
+                @Override
+                public Thread newThread(Runnable r) {
+                    return new Thread(r, "LINUX_BOSS_" + index.incrementAndGet());
+                }
+            });
+            workerGroup = new EpollEventLoopGroup(workerCount, new ThreadFactory() {
+                private AtomicInteger index = new AtomicInteger(0);
+
+                @Override
+                public Thread newThread(Runnable r) {
+                    return new Thread(r, "LINUX_WORK_" + index.incrementAndGet());
+                }
+            });
+        } else {
+            bossGroup = new NioEventLoopGroup(workerCount, new ThreadFactory() {
+                private AtomicInteger index = new AtomicInteger(0);
+
+                @Override
+                public Thread newThread(Runnable r) {
+                    return new Thread(r, "BOSS_" + index.incrementAndGet());
+                }
+            });
+            workerGroup = new NioEventLoopGroup(workerCount, new ThreadFactory() {
+                private AtomicInteger index = new AtomicInteger(0);
+
+                @Override
+                public Thread newThread(Runnable r) {
+                    return new Thread(r, "WORK_" + index.incrementAndGet());
+                }
+            });
+        }
 
         // 将一些handler放在这里初始化是为了防止多例的产生。
         if (checkHeartbeat) {
@@ -200,7 +233,7 @@ public class Server extends Service {
             public void operationComplete(ChannelFuture ch) throws Exception {
                 ch.await();
                 if (ch.isSuccess()) {
-                    logger.info("Server started, listening on '{}.' useEPoll is {}.", socketAddress, useEpoll());
+                    logger.info("Server started, listening on '{}.", socketAddress);
                 } else {
                     logger.error("Failed to start Server '{}', caused by: '{}'.", socketAddress, ch.cause());
                 }
