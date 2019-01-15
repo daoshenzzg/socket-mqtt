@@ -106,4 +106,34 @@ public class HsqlDao {
         }
         return resultSet;
     }
+
+    public ResultSet query(String sql) {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = dataSource.getConnection();
+            statement = connection.prepareStatement(sql);
+            resultSet = statement.executeQuery();
+        } catch (Exception e) {
+            logger.error("Failed to query result set using SQL '{}'.", sql, e);
+        } finally {
+            if (statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException e) {
+                    logger.error("Failed to close JDBC statement.", e);
+                }
+            }
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    logger.error("Failed to close JDBC connection.", e);
+                }
+            }
+        }
+
+        return resultSet;
+    }
 }

@@ -1,5 +1,6 @@
-package com.mgtv.socket.service.mqtt;
+package com.mgtv.socket.push.server;
 
+import com.alibaba.fastjson.JSON;
 import com.mgtv.socket.pojo.MqttRequest;
 import com.mgtv.socket.service.SocketType;
 import com.mgtv.socket.service.WrappedChannel;
@@ -7,6 +8,8 @@ import com.mgtv.socket.service.server.Server;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * @author zhiguang@mgtv.com
@@ -17,11 +20,16 @@ public class MqttServerTest {
     private static final Logger logger = LoggerFactory.getLogger(MqttServerTest.class);
 
     public static void main(String[] args) throws Exception {
+        ApplicationContext context = new ClassPathXmlApplicationContext("activity.xml");
+        AppContext.getInstance().setContext(context);
+
+        ChannelDao channelDao = (ChannelDao)AppContext.getInstance().getContext().getBean("channelDao");
+
         Server server = new Server();
         server.setPort(8000);
         server.setOpenCount(true);
         server.setCheckHeartbeat(true);
-        server.addEventListener(new EchoMessageEventListener());
+        server.addEventListener(new MqttMessageEventListener());
         server.setSocketType(SocketType.MQTT);
         server.bind();
 
@@ -33,12 +41,12 @@ public class MqttServerTest {
         MqttRequest mqttRequest = new MqttRequest((message.toString().getBytes()));
         while (true) {
             if (server.getChannels().size() > 0) {
-                logger.info("模拟推送消息");
+                logger.info("模拟推送消息:");
+                logger.info(JSON.toJSONString(channelDao.getAll()));
                 for (WrappedChannel channel : server.getChannels().values()) {
                     server.send(channel, "#", mqttRequest);
                     Thread.sleep(5000L);
                 }
-
             }
         }
     }

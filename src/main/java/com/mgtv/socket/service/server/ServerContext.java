@@ -13,7 +13,7 @@ public class ServerContext {
 
     private static ServerContext instance = new ServerContext();
 
-    public static ServerContext getInstance() {
+    public static ServerContext getContext() {
         return instance;
     }
 

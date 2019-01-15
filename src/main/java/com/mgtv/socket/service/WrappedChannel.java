@@ -29,7 +29,7 @@ public class WrappedChannel implements Channel {
         @Override
         public void operationComplete(ChannelFuture future) throws Exception {
             if (future.isSuccess()) {
-                Server server = ServerContext.getInstance().getServer();
+                Server server = ServerContext.getContext().getServer();
                 if (server != null) {
                     server.getCountInfo().getSentNum().incrementAndGet();
                     server.getCountInfo().setLastSent(System.currentTimeMillis());

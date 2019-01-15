@@ -66,7 +66,7 @@ public class StatusMessageEventListener implements MessageEventListener {
 
     private Map<String, Object> doGetStatus() {
         Map<String, Object> resultMap = new LinkedHashMap<String, Object>();
-        Server busServer = ServerContext.getInstance().getServer();
+        Server busServer = ServerContext.getContext().getServer();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
         if (busServer != null) {
@@ -103,7 +103,7 @@ public class StatusMessageEventListener implements MessageEventListener {
 
     private Map<String, Object> doGetConfig() {
         Map<String, Object> resultMap = new LinkedHashMap<String, Object>();
-        Server busServer = ServerContext.getInstance().getServer();
+        Server busServer = ServerContext.getContext().getServer();
         if (busServer != null) {
             //ip
             resultMap.put("ip", busServer.getIp() == null ? "not specified" : busServer.getIp());

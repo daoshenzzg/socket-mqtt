@@ -7,6 +7,7 @@ import com.mgtv.socket.codec.MqttWebSocketCodec;
 import com.mgtv.socket.count.CountHandler;
 import com.mgtv.socket.count.CountInfo;
 import com.mgtv.socket.listener.DefaultMessageEventListener;
+import com.mgtv.socket.pojo.MqttRequest;
 import com.mgtv.socket.pojo.Request;
 import com.mgtv.socket.pojo.Response;
 import com.mgtv.socket.service.*;
@@ -16,15 +17,18 @@ import com.mgtv.socket.status.StatusServer;
 import com.mgtv.socket.util.AddressUtil;
 import com.mgtv.socket.util.Sequence;
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
+import io.netty.channel.epoll.Epoll;
+import io.netty.channel.epoll.EpollEventLoopGroup;
+import io.netty.channel.epoll.EpollServerSocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
-import io.netty.handler.codec.mqtt.MqttDecoder;
-import io.netty.handler.codec.mqtt.MqttEncoder;
+import io.netty.handler.codec.mqtt.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.slf4j.Logger;
@@ -123,9 +127,8 @@ public class Server extends Service {
     @Override
     protected void init() {
         super.init();
-
-        bossGroup = new NioEventLoopGroup();
-        workerGroup = new NioEventLoopGroup();
+        bossGroup = useEpoll() ? new EpollEventLoopGroup() : new NioEventLoopGroup();
+        workerGroup = useEpoll() ? new EpollEventLoopGroup() : new NioEventLoopGroup();
 
         // 将一些handler放在这里初始化是为了防止多例的产生。
         if (checkHeartbeat) {
@@ -137,7 +140,7 @@ public class Server extends Service {
 
         if (openCount) {
             countHandler = new CountHandler();
-            ServerContext.getInstance().setServer(this);
+            ServerContext.getContext().setServer(this);
         }
     }
 
@@ -148,7 +151,7 @@ public class Server extends Service {
         bootstrap.option(ChannelOption.SO_KEEPALIVE, keepAlive);
         bootstrap.option(ChannelOption.TCP_NODELAY, tcpNoDelay);
         bootstrap.group(bossGroup, workerGroup);
-        bootstrap.channel(NioServerSocketChannel.class);
+        bootstrap.channel(useEpoll() ? EpollServerSocketChannel.class : NioServerSocketChannel.class);
         bootstrap.childHandler(new ChannelInitializer<SocketChannel>() {
             @Override
             public void initChannel(SocketChannel ch) throws Exception {
@@ -197,7 +200,7 @@ public class Server extends Service {
             public void operationComplete(ChannelFuture ch) throws Exception {
                 ch.await();
                 if (ch.isSuccess()) {
-                    logger.info("Server started, listening on '{}.'", socketAddress);
+                    logger.info("Server started, listening on '{}.' useEPoll is {}.", socketAddress, useEpoll());
                 } else {
                     logger.error("Failed to start Server '{}', caused by: '{}'.", socketAddress, ch.cause());
                 }
@@ -330,6 +333,24 @@ public class Server extends Service {
         this.stateReportService.execute(new ServerStateReportJob(server, client));
 
         logger.info("State report job '{}' in server '{}' started.", stateReportJobName, serviceName);
+    }
+
+    public ChannelFuture send(WrappedChannel channel, String topic, MqttRequest request) {
+        MqttPublishMessage pubMessage = (MqttPublishMessage) MqttMessageFactory.newMessage(
+                new MqttFixedHeader(MqttMessageType.PUBLISH,
+                        request.isDup(),
+                        request.getQos(),
+                        request.isRetained(),
+                        0),
+                new MqttPublishVariableHeader(topic, 0),
+                Unpooled.buffer().writeBytes(request.getPayload()));
+        return channel.writeAndFlush(pubMessage);
+    }
+
+    public boolean useEpoll() {
+        String osName = System.getProperty("os.name");
+        boolean isLinuxPlatform = StringUtils.containsIgnoreCase(osName, "linux");
+        return isLinuxPlatform && Epoll.isAvailable();
     }
 
     public Map<String, WrappedChannel> getChannels() {

@@ -16,21 +16,21 @@ public class CountHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        Server server = ServerContext.getInstance().getServer();
+        Server server = ServerContext.getContext().getServer();
         server.getCountInfo().setCurChannelNum(server.getChannels().size());
         super.channelActive(ctx);
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        Server server = ServerContext.getInstance().getServer();
+        Server server = ServerContext.getContext().getServer();
         server.getCountInfo().setCurChannelNum(server.getChannels().size());
         super.channelInactive(ctx);
     }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        CountInfo countInfo = ServerContext.getInstance().getServer().getCountInfo();
+        CountInfo countInfo = ServerContext.getContext().getServer().getCountInfo();
         countInfo.getReceiveNum().incrementAndGet();
         countInfo.setLastReceive(System.currentTimeMillis());
         super.channelRead(ctx, msg);
