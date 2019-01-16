@@ -181,8 +181,8 @@ public class Server extends Service {
         init();
 
         bootstrap = new ServerBootstrap();
-        bootstrap.option(ChannelOption.SO_KEEPALIVE, keepAlive);
-        bootstrap.option(ChannelOption.TCP_NODELAY, tcpNoDelay);
+        bootstrap.childOption(ChannelOption.SO_KEEPALIVE, keepAlive);
+        bootstrap.childOption(ChannelOption.TCP_NODELAY, tcpNoDelay);
         bootstrap.group(bossGroup, workerGroup);
         bootstrap.channel(useEpoll() ? EpollServerSocketChannel.class : NioServerSocketChannel.class);
         bootstrap.childHandler(new ChannelInitializer<SocketChannel>() {
@@ -195,6 +195,9 @@ public class Server extends Service {
                 for (String key : handlers.keySet()) {
                     pipeline.addLast(key, handlers.get(key));
                 }
+
+                pipeline.addLast("jsonDecoder", new JsonDecoder());
+                pipeline.addLast("jsonEncoder", new JsonEncoder());
 
                 if (socketType.equals(SocketType.NORMAL)) {
                     if (checkHeartbeat) {
@@ -368,7 +371,7 @@ public class Server extends Service {
         logger.info("State report job '{}' in server '{}' started.", stateReportJobName, serviceName);
     }
 
-    public ChannelFuture send(WrappedChannel channel, String topic, MqttRequest request) {
+    public ChannelFuture send(WrappedChannel channel, String topic, MqttRequest request) throws InterruptedException {
         MqttPublishMessage pubMessage = (MqttPublishMessage) MqttMessageFactory.newMessage(
                 new MqttFixedHeader(MqttMessageType.PUBLISH,
                         request.isDup(),
@@ -377,7 +380,11 @@ public class Server extends Service {
                         0),
                 new MqttPublishVariableHeader(topic, 0),
                 Unpooled.buffer().writeBytes(request.getPayload()));
-        return channel.writeAndFlush(pubMessage);
+        // 超过高水位，则采取同步模式
+        if (channel.isWritable()) {
+            return channel.writeAndFlush(pubMessage);
+        }
+        return channel.writeAndFlush(pubMessage).sync();
     }
 
     public boolean useEpoll() {

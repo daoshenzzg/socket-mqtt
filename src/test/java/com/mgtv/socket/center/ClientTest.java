@@ -15,10 +15,8 @@ public class ClientTest {
         final Client client = new Client();
         client.setCheckHeartbeat(false);
         client.setCenterAddr("127.0.0.1:9000,127.0.0.1:9010");
-
         client.addChannelHandler("decoder", new JsonDecoder());
         client.addChannelHandler("encoder", new JsonEncoder());
-
         client.connect();
 
         for (int i = 0; i < 5; i++) {
