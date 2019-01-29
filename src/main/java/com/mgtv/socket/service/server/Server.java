@@ -29,6 +29,7 @@ import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.codec.mqtt.*;
+import io.netty.handler.timeout.IdleStateHandler;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.slf4j.Logger;
@@ -165,7 +166,7 @@ public class Server extends Service {
 
         // 将一些handler放在这里初始化是为了防止多例的产生。
         if (checkHeartbeat) {
-            timeoutHandler = new SharableIdleStateHandler(readerIdleTimeSeconds, writerIdleTimeSeconds, allIdleTimeSeconds);
+            timeoutHandler = new IdleStateHandler(readerIdleTimeSeconds, writerIdleTimeSeconds, allIdleTimeSeconds);
             heartbeatHandler = new ServerHeartbeatHandler();
         }
         eventDispatcher = new EventDispatcher(this);
@@ -181,9 +182,9 @@ public class Server extends Service {
         init();
 
         bootstrap = new ServerBootstrap();
+        bootstrap.group(bossGroup, workerGroup);
         bootstrap.childOption(ChannelOption.SO_KEEPALIVE, keepAlive);
         bootstrap.childOption(ChannelOption.TCP_NODELAY, tcpNoDelay);
-        bootstrap.group(bossGroup, workerGroup);
         bootstrap.channel(useEpoll() ? EpollServerSocketChannel.class : NioServerSocketChannel.class);
         bootstrap.childHandler(new ChannelInitializer<SocketChannel>() {
             @Override
@@ -195,9 +196,6 @@ public class Server extends Service {
                 for (String key : handlers.keySet()) {
                     pipeline.addLast(key, handlers.get(key));
                 }
-
-                pipeline.addLast("jsonDecoder", new JsonDecoder());
-                pipeline.addLast("jsonEncoder", new JsonEncoder());
 
                 if (socketType.equals(SocketType.NORMAL)) {
                     if (checkHeartbeat) {

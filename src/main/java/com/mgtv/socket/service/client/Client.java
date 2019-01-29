@@ -124,7 +124,7 @@ public class Client extends BaseClient {
                         json.put("action", "getServerInfo");
                         json.put("service", this.getServiceName());
                         request.setMessage(json.toString());
-                        Response response = (Response) baseClient.sendWithSync(request);
+                        Response response = baseClient.sendWithSync(request);
                         // 解析server列表
                         if (response != null && response.getCode() == Response.SUCCESS) {
                             JSONArray jsonArray = JSON.parseObject(response.getResult().toString()).getJSONArray("server_list");

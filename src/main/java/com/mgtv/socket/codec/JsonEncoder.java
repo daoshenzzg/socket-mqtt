@@ -9,6 +9,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.CodecException;
 import io.netty.handler.codec.MessageToMessageEncoder;
 
 import java.util.List;
@@ -50,7 +51,7 @@ public class JsonEncoder extends MessageToMessageEncoder<BaseMessage> {
             ByteBuf buf = Unpooled.copiedBuffer(json.toString().getBytes());
             out.add(buf);
         } else {
-            out.add(msg);
+            throw new CodecException("unknown message type: " + msg);
         }
     }
 }

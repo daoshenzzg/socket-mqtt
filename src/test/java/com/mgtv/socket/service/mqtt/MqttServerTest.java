@@ -36,11 +36,10 @@ public class MqttServerTest {
             if (server.getChannels().size() > 0) {
                 logger.info("模拟推送消息");
                 for (WrappedChannel channel : server.getChannels().values()) {
-                    server.send(channel, "#", mqttRequest);
-                    Thread.sleep(5000L);
+                    server.send(channel, "mgtv/notice/", mqttRequest);
                 }
-
             }
+            Thread.sleep(1000L);
         }
     }
 }

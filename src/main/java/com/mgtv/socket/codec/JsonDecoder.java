@@ -8,6 +8,7 @@ import com.mgtv.socket.pojo.Response;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.CodecException;
 import io.netty.handler.codec.MessageToMessageDecoder;
 
 import java.util.List;
@@ -26,27 +27,29 @@ public class JsonDecoder extends MessageToMessageDecoder<ByteBuf> {
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf buf, List<Object> out) throws Exception {
-        byte[] tmp = new byte[buf.readableBytes()];
-        buf.readBytes(tmp);
-        String jsonStr = new String(tmp);
+        try {
+            byte[] tmp = new byte[buf.readableBytes()];
+            buf.readBytes(tmp);
+            String jsonStr = new String(tmp);
 
-        JSONObject json = JSON.parseObject(jsonStr);
-        String type = json.getString("type");
-        if (type.equalsIgnoreCase(REQUEST)) {
-            Request request = new Request();
-            request.setSequence(json.getIntValue("sequence"));
-            request.setMessage(json.getString("message"));
-            out.add(request);
-        } else if (type.equalsIgnoreCase(RESPONSE)) {
-            Response response = new Response();
-            response.setSequence(json.getIntValue("sequence"));
-            response.setCode(json.getIntValue("code"));
-            response.setResult(json.get("result"));
-            out.add(response);
-        } else if (type.equalsIgnoreCase(HEARTBEAT)) {
-            out.add(Heartbeat.getSingleton());
-        } else {
-            out.add(buf);
+            JSONObject json = JSON.parseObject(jsonStr);
+            String type = json.getString("type");
+            if (type.equalsIgnoreCase(REQUEST)) {
+                Request request = new Request();
+                request.setSequence(json.getIntValue("sequence"));
+                request.setMessage(json.getString("message"));
+                out.add(request);
+            } else if (type.equalsIgnoreCase(RESPONSE)) {
+                Response response = new Response();
+                response.setSequence(json.getIntValue("sequence"));
+                response.setCode(json.getIntValue("code"));
+                response.setResult(json.get("result"));
+                out.add(response);
+            } else if (type.equalsIgnoreCase(HEARTBEAT)) {
+                out.add(Heartbeat.getSingleton());
+            }
+        } catch (Exception ex) {
+            throw new CodecException(ex);
         }
     }
 }
