@@ -65,35 +65,37 @@ public class StatusMessageEventListener implements MessageEventListener {
     }
 
     private Map<String, Object> doGetStatus() {
-        Map<String, Object> resultMap = new LinkedHashMap<String, Object>();
+        Map<String, Object> resultMap = new LinkedHashMap<>();
         Server busServer = ServerContext.getContext().getServer();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
         if (busServer != null) {
             //server名称
-            resultMap.put("service name", busServer.getServiceName());
+            resultMap.put("serviceName", busServer.getServiceName());
             //server启动时间
-            resultMap.put("server start time", sdf.format(new Date(busServer.getStartTime())));
+            resultMap.put("serverStartTime", sdf.format(new Date(busServer.getStartTime())));
             //当前连接数
-            resultMap.put("client number", busServer.getCountInfo().getCurChannelNum());
+            resultMap.put("clientNumber", busServer.getCountInfo().getCurChannelNum());
             //最大连接数
-            resultMap.put("max client number", busServer.getCountInfo().getMaxChannelNum());
+            resultMap.put("maxClientNumber", busServer.getCountInfo().getMaxChannelNum());
             //最后次接收消息时间
             if (busServer.getCountInfo().getLastReceive() > 0) {
-                resultMap.put("last receive time", sdf.format(new Date(busServer.getCountInfo().getLastReceive())));
+                resultMap.put("lastReceiveTime", sdf.format(new Date(busServer.getCountInfo().getLastReceive())));
             } else {
-                resultMap.put("last receive time", "no message received");
+                resultMap.put("lastReceiveTime", "no message received");
             }
             //最后次发送消息时间
             if (busServer.getCountInfo().getLastSent() > 0) {
-                resultMap.put("last sent time", sdf.format(new Date(busServer.getCountInfo().getLastSent())));
+                resultMap.put("lastSentTime", sdf.format(new Date(busServer.getCountInfo().getLastSent())));
             } else {
-                resultMap.put("last sent time", "no message send");
+                resultMap.put("lastSentTime", "no message send");
             }
             //接收消息数
-            resultMap.put("receive number", busServer.getCountInfo().getReceiveNum().get());
+            resultMap.put("receiveNumber", busServer.getCountInfo().getReceiveNum().get());
             //发送消息数
-            resultMap.put("sent number", busServer.getCountInfo().getSentNum().get());
+            resultMap.put("sentNumber", busServer.getCountInfo().getSentNum().get());
+            // 心跳次数
+            resultMap.put("heartbeatNumber", busServer.getCountInfo().getHeartbeatNum().get());
         } else {
             resultMap.put("error", "business server is not found!");
         }
