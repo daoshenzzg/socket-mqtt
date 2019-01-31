@@ -38,6 +38,11 @@ public class ServerHeartbeatHandler extends ChannelInboundHandlerAdapter {
             if (logger.isDebugEnabled()) {
                 logger.debug("Heartbeat received.");
             }
+
+            Server server = ServerContext.getContext().getServer();
+            if(server != null) {
+                server.getCountInfo().getHeartbeatNum().incrementAndGet();
+            }
             return;
         }
         super.channelRead(ctx, msg);

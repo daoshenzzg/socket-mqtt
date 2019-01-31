@@ -1,12 +1,14 @@
 package com.mgtv.socket.count;
 
+import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author zhiguang@mgtv.com
  * @date 2019/1/11 16:55
  */
-public class CountInfo {
+public class CountInfo implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
     /**
@@ -34,13 +36,9 @@ public class CountInfo {
      */
     private AtomicLong sentNum = new AtomicLong();
     /**
-     * 接收心跳消息个数
+     * 收发心跳数
      */
-    private AtomicLong heartbeatReceived = new AtomicLong();
-    /**
-     * 发送心跳消息数
-     */
-    private AtomicLong heartbeatSent = new AtomicLong();
+    private AtomicLong heartbeatNum = new AtomicLong();
 
     public long getCurChannelNum() {
         return curChannelNum;
@@ -65,12 +63,8 @@ public class CountInfo {
         return sentNum;
     }
 
-    public AtomicLong getHeartbeatReceived() {
-        return this.heartbeatReceived;
-    }
-
-    public AtomicLong getHeartbeatSent() {
-        return this.heartbeatSent;
+    public AtomicLong getHeartbeatNum() {
+        return heartbeatNum;
     }
 
     public long getLastReceive() {
@@ -99,9 +93,8 @@ public class CountInfo {
         sb.append("StatisticInfo [lastReceive=").append(this.lastReceive);
         sb.append(", lastSent=").append(this.lastSent);
         sb.append(", receiveNum=").append(this.receiveNum);
-        sb.append(", heartbeatReceived=").append(this.heartbeatReceived);
         sb.append(", sentNum=").append(this.sentNum);
-        sb.append(", heartbeatSent=").append(this.heartbeatSent);
+        sb.append(", heartbeatNum=").append(this.heartbeatNum);
         sb.append(", maxChannelNum=").append(this.maxChannelNum);
         sb.append(", curChannelNum=").append(this.curChannelNum);
         sb.append("]");

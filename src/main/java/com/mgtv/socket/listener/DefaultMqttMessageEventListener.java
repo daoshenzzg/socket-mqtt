@@ -1,6 +1,8 @@
 package com.mgtv.socket.listener;
 
 import com.mgtv.socket.service.WrappedChannel;
+import com.mgtv.socket.service.server.Server;
+import com.mgtv.socket.service.server.ServerContext;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.mqtt.*;
 import org.slf4j.Logger;
@@ -63,6 +65,11 @@ public class DefaultMqttMessageEventListener implements MessageEventListener {
     public void pingReq(WrappedChannel channel, MqttMessage msg) {
         if (logger.isDebugEnabled()) {
             logger.debug("MQTT pingReq received.");
+        }
+
+        Server server = ServerContext.getContext().getServer();
+        if(server != null) {
+            server.getCountInfo().getHeartbeatNum().incrementAndGet();
         }
 
         MqttMessage pingResp = new MqttMessage(new MqttFixedHeader(MqttMessageType.PINGRESP, false,

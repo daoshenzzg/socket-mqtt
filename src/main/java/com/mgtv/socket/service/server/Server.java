@@ -391,6 +391,10 @@ public class Server extends Service {
         return isLinuxPlatform && Epoll.isAvailable();
     }
 
+    public boolean useMqtt() {
+        return socketType.equals(SocketType.MQTT) || socketType.equals(SocketType.MQTT_WS);
+    }
+
     public Map<String, WrappedChannel> getChannels() {
         return channels;
     }
