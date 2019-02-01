@@ -1,11 +1,11 @@
 package com.mgtv.socket.service.normal;
 
+import com.alibaba.fastjson.JSONObject;
 import com.mgtv.socket.codec.JsonDecoder;
 import com.mgtv.socket.codec.JsonEncoder;
 import com.mgtv.socket.pojo.Request;
 import com.mgtv.socket.pojo.Response;
 import com.mgtv.socket.service.client.Client;
-import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

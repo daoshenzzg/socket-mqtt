@@ -1,8 +1,8 @@
 package com.mgtv.socket.service.mqtt;
 
+import com.alibaba.fastjson.JSONObject;
 import com.mgtv.socket.service.SocketType;
 import com.mgtv.socket.service.server.Server;
-import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
