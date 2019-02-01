@@ -34,6 +34,7 @@ public class ServerDispatchHandler extends ChannelInboundHandlerAdapter {
         }
         WrappedChannel channel = ((Server) eventDispatcher.getService()).getChannel(channelId);
         eventDispatcher.dispatchMessageEvent(ctx, channel, msg);
+        super.channelRead(ctx, msg);
     }
 
     @Override
@@ -45,11 +46,13 @@ public class ServerDispatchHandler extends ChannelInboundHandlerAdapter {
         }
         ((Server) eventDispatcher.getService()).getChannels().put(channelId, channel);
         eventDispatcher.dispatchChannelEvent(ctx, channel);
+        super.channelActive(ctx);
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         closeChannel(ctx);
+        super.channelInactive(ctx);
     }
 
     @Override

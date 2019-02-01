@@ -4,6 +4,7 @@ import javax.crypto.Cipher;
 import java.security.*;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
 
 /**
  * @author zhiguang@mgtv.com
@@ -22,12 +23,12 @@ public class RSAEncrypt extends BaseEncrypt implements Encrypt {
 
     public RSAEncrypt(String privateKey, String publicKey)
             throws Exception {
-        byte[] bytes = Base64.decode(privateKey);
+        byte[] bytes = Base64.getDecoder().decode(privateKey);
         PKCS8EncodedKeySpec pri_keySpec = new PKCS8EncodedKeySpec(bytes);
         KeyFactory kf = KeyFactory.getInstance("RSA");
         this.privateKey = kf.generatePrivate(pri_keySpec);
 
-        bytes = Base64.decode(publicKey);
+        bytes = Base64.getDecoder().decode(publicKey);
         X509EncodedKeySpec pub_keySpec = new X509EncodedKeySpec(bytes);
         this.publicKey = kf.generatePublic(pub_keySpec);
     }
@@ -64,9 +65,11 @@ public class RSAEncrypt extends BaseEncrypt implements Encrypt {
 
         KeyPair keyPair = RSAEncrypt.createRSAKeyPair();
         // 获取公钥密文
-        System.out.println(Base64.encodeBytes(keyPair.getPublic().getEncoded()));
+        String publicKey = Base64.getEncoder().encodeToString(keyPair.getPublic().getEncoded());
+        System.out.println(publicKey);
         // 获取私钥密文
-        System.out.println(Base64.encodeBytes(keyPair.getPrivate().getEncoded()));
+        String privateKey = Base64.getEncoder().encodeToString(keyPair.getPrivate().getEncoded());
+        System.out.println(privateKey);
 
         RSAEncrypt rsaEncrypt = new RSAEncrypt(keyPair);
         String enStr = rsaEncrypt.encrypt(testStr, "UTF-8");
@@ -75,8 +78,6 @@ public class RSAEncrypt extends BaseEncrypt implements Encrypt {
         System.out.println("加密后：" + enStr);
         System.out.println("解密后：" + deStr);
 
-        String privateKey = "MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAIoEYdgivxdsBorLODoySsXD8RyJA2aVLrgjO7eOkJrXUsIR4+a0aA0TgdmHiQOpBQuDL8rxvv2B8Q7bAZWdSbYCCiebjXk2hVtLRFycpXzNv0/IqGpjrlT68bZAJ5CbpFQ/08f1x5DdVgAGcvjzqOP7iilBL9nciiScqVt/EWjHAgMBAAECgYB1XTifBR0em7wMdrd/tZikB/WW4GRF7YJnD38OnmsVYRl88p2sZ6k7xWTcSEcZF7e0jIAtwdk51i/ZBB+azMAKehiiL6La4CEeDxKSKhs0YDBA1yEVbKadFhyHk/rNy/djua+2sHMFYyTlo8lGyKihzddqZ7eyqOC3IkAqv/GDoQJBAP2iXlbNMQ6AwYTEzcQH3QF8S0thEu3aAcv5T8p40Ci1sbPGbXOYET27q+ANxDJpP3gEfXXi2eHuZJ/C0tCV/lkCQQCLTfECzQpb6DPMEBNNrBBvZ4NsAdaaPOdLoHZVL5fpZSHbkc2RU8ndM47Abp7LFN/S5xmFMXInezfbf87JyPwfAkEAhPvvLt/jStFjpfNyV8gvrqm26Mz7Gc7mhkYv+d8idVXe2H2/wY4H7DBMS+ur5Sqd5pWkGn1Y9EcEZ2fFFSyv8QJAMYlo4A8b1Ozwpms9Agzi10rfECRjNPvdYCZSjh5bjfKZpKPnjvtVuGRiKgnsS9lDcpMdnyCjMGj/xv1fAqCHDwJAbY1Sw5K2F0Nmt2C9NjTZzhq61NgEVINtGA5r9ziZ1M237+8zo6wTWo4HsiCHbNOz091GoFxOxp7Di5e6OAxBGA==";
-        String publicKey = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCGqAPhRl42MLbqCQ/DGmdTyBg1ItNOs+oJyZxmhSHiGX/mqK12qc7Ft4WXdVf8848H7AxEFZvHVjEpgsspdkZDqha14ymaZjXVVYk1oCPgieQ8EbKYrTg6iswhPP3E2SbZYFASwtTduqOVitRT7qrqCKlMwVnLdcGs2EyrlXtznwIDAQAB";
         rsaEncrypt = new RSAEncrypt(privateKey, publicKey);
         deStr = rsaEncrypt.decrypt(enStr, "UTF-8");
         System.out.println("加密前：" + testStr);

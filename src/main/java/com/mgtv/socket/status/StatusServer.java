@@ -4,6 +4,7 @@ import com.mgtv.socket.service.server.Server;
 import com.mgtv.socket.service.server.ServerDispatchHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
+import io.netty.channel.epoll.EpollServerSocketChannel;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.DelimiterBasedFrameDecoder;
@@ -24,7 +25,7 @@ import java.util.LinkedHashMap;
 public class StatusServer extends Server {
     private static final Logger logger = LoggerFactory.getLogger(StatusServer.class);
 
-    public StatusServer(){
+    public StatusServer() {
     }
 
     @Override
@@ -46,10 +47,10 @@ public class StatusServer extends Server {
         init();
 
         bootstrap = new ServerBootstrap();
-        bootstrap.option(ChannelOption.SO_KEEPALIVE, keepAlive);
-        bootstrap.option(ChannelOption.TCP_NODELAY, tcpNoDelay);
+        bootstrap.childOption(ChannelOption.SO_KEEPALIVE, keepAlive);
+        bootstrap.childOption(ChannelOption.TCP_NODELAY, tcpNoDelay);
         bootstrap.group(bossGroup, workerGroup);
-        bootstrap.channel(NioServerSocketChannel.class);
+        bootstrap.channel(useEpoll() ? EpollServerSocketChannel.class : NioServerSocketChannel.class);
         bootstrap.childHandler(new ChannelInitializer<SocketChannel>() {
             @Override
             public void initChannel(SocketChannel ch) throws Exception {
@@ -75,7 +76,19 @@ public class StatusServer extends Server {
         }
 
         ChannelFuture future = bootstrap.bind(socketAddress);
-        logger.info("Status Server started, listening on '{}'.", socketAddress);
+
+        InetSocketAddress sockAddr = socketAddress;
+        future.addListener(new ChannelFutureListener() {
+            @Override
+            public void operationComplete(ChannelFuture ch) throws Exception {
+                ch.await();
+                if (ch.isSuccess()) {
+                    logger.info("Status Server started, listening on '{}.", sockAddr);
+                } else {
+                    logger.error("Failed to start status server '{}', caused by: '{}'.", sockAddr, ch.cause());
+                }
+            }
+        });
 
         return future;
     }

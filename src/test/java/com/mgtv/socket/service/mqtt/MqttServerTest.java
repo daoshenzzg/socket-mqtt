@@ -1,8 +1,6 @@
 package com.mgtv.socket.service.mqtt;
 
-import com.mgtv.socket.pojo.MqttRequest;
 import com.mgtv.socket.service.SocketType;
-import com.mgtv.socket.service.WrappedChannel;
 import com.mgtv.socket.service.server.Server;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
@@ -31,7 +29,7 @@ public class MqttServerTest {
         message.put("action", "echo");
         message.put("message", "this is mgtv push message!");
 
-        MqttRequest mqttRequest = new MqttRequest((message.toString().getBytes()));
+        /*MqttRequest mqttRequest = new MqttRequest((message.toString().getBytes()));
         while (true) {
             if (server.getChannels().size() > 0) {
                 logger.info("模拟推送消息");
@@ -40,6 +38,6 @@ public class MqttServerTest {
                 }
             }
             Thread.sleep(1000L);
-        }
+        }*/
     }
 }
