@@ -69,10 +69,10 @@ socket-core会帮助上层服务做一下工作：
         <th>查看连接数(ss -l)</th>
     <tr>
         <td width="50%">
-            <img src="http://colobu.com/2018/01/31/benchmark-2018-spring-of-popular-rpc-frameworks/p0-throughput.png">
+            <img src="doc/status.png">
         </td>
         <td width="50%">
-            <img src="http://colobu.com/2018/01/31/benchmark-2018-spring-of-popular-rpc-frameworks/p0-latency.png">
+            <img src="doc/ss.png">
         </td>
     </tr>
 </table>
