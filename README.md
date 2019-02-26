@@ -32,27 +32,50 @@ socket-core会帮助上层服务做一下工作：
 4000客户端 Publish 单消息1024B 上行tps: 17万+，千兆网卡流量基本打满。
 备注：Mqtt Server启动内存只分配了5G，如果分配到10G，理论上可以支持百万连接。还有，测试开启了心跳上报。
 
+### 2台测试机每台启动5000 Clients，Server单消息体1024B，推送完100万条消息的消息下行能力。
 <table>
     <tr>
-        <th>查看连接数(telnet server_ip 8001; get status)</th>
-        <th>查看连接数(ss -l)</th>
+        <th>1万Clients订阅的消息下行能力</th>
+        <th>对应下行负载情况</th>
     <tr>
-        <td width="30%">
-            <img src="doc/status.png">
+        <td width="50%">
+            <img src="doc/sub.png">
         </td>
-        <td width="30%">
-            <img src="doc/ss.png">
+        <td width="50%">
+            <img src="doc/dstat_sub.png">
         </td>
     </tr>
 </table>
 
-[1万客户端订阅推送性能](doc/sub.png)
+### 2台测试机每台启动2000 Clients，单消息体1024B，客户端并发Publish完100万条消息的消息上行能力。
+<table>
+    <tr>
+        <th>4000Clients订阅消息上行能力</th>
+        <th>对应上行负载情况</th>
+    <tr>
+        <td width="50%">
+            <img src="doc/pub.png">
+        </td>
+        <td width="50%">
+            <img src="doc/dstat_pub.png">
+        </td>
+    </tr>
+</table>
 
-[对应负载](doc/dstat_sub.png)
-
-[4000客户端消息上行性能](doc/pub.png)
-
-[对应负载](doc/dstat_pub.png)
+### 查看连接数情况
+<table>
+    <tr>
+        <th>查看连接数(telnet 10.43.204.61 8001; get status)</th>
+        <th>查看连接数(ss -l)</th>
+    <tr>
+        <td width="50%">
+            <img src="http://colobu.com/2018/01/31/benchmark-2018-spring-of-popular-rpc-frameworks/p0-throughput.png">
+        </td>
+        <td width="50%">
+            <img src="http://colobu.com/2018/01/31/benchmark-2018-spring-of-popular-rpc-frameworks/p0-latency.png">
+        </td>
+    </tr>
+</table>
 
 # 使用说明
 
@@ -66,12 +89,19 @@ socket-core会帮助上层服务做一下工作：
 **Server**
 ```$xslt
 Server server = new Server();
-server.setPort(8000);
+// 设置Broker端口
+server.setPort(8000); 
+// 设置启动信息统计
 server.setOpenCount(true);
+// 设置启用心跳功能
 server.setCheckHeartbeat(true);
+// 设置启动服务状态，默认端口8001。通过telnet server_ip 8001; get status查看服务信息
 server.setOpenStatus(true);
+// 自定义监听器，可处理相关事件
 server.addEventListener(new EchoMessageEventListener());
+// 设置Broker启动协议。SocketType.MQTT - MQTT协议； SocketType.NORMAL - 普通Socket协议；SocketType.MQTT_WS - MQTT web socket协议；
 server.setSocketType(SocketType.MQTT);
+// 绑定端口启动服务
 server.bind();
 
 //模拟推送
