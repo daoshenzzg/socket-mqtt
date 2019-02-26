@@ -38,7 +38,7 @@ socket-core会帮助上层服务做一下工作：
         <th>对应下行负载情况</th>
     <tr>
         <td width="50%">
-            <img src="doc/sub.png">
+            <img src="doc/sub.png" height="100%">
         </td>
         <td width="50%">
             <img src="doc/dstat_sub.png">
