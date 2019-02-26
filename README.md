@@ -14,8 +14,7 @@ socket-core会帮助上层服务做一下工作：
 * 支持普通socket、MQTT、MQTT web socket协议
 
 # 项目结构
-
-[项目结构](doc/project.png)
+<img src="doc/project.png" height="400px;"/>
 
 * codec: 封装编码与解码
 * compression: 封装压缩与解压缩
