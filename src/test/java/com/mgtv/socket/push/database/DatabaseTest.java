@@ -15,7 +15,7 @@ public class DatabaseTest {
     public static void main(String[] args) throws Exception {
         HsqlDataSource dataSource = new HsqlDataSource();
         dataSource.setDriverClassName("org.hsqldb.jdbcDriver");
-        dataSource.setUrl("jdbc:hsqldb:mem:student");
+        dataSource.setUrl("jdbc:hsqldb:mem:channels");
         dataSource.setUsername("admin");
         dataSource.setPassword("");
         dataSource.setTableScript("classpath:createTable.sql");
@@ -37,15 +37,15 @@ public class DatabaseTest {
     }
 
     private static void insert(QueryRunner qr) throws SQLException {
-        String sql = "insert into classes(id, name, remark) values(?, ?, ?)";
+        String sql = "insert into subscribe_user(channel_id, client_id, topic, create_time) values(?, ?, ?, ?)";
 
         for (int i = 0; i < 10000; i++) {
-            qr.execute(sql, i, "name" + i, "remark" + i);
+            qr.execute(sql, "channelId_" +i,"clientId_" +i, "mgtv/notice/", System.currentTimeMillis()/1000);
         }
     }
 
     private static void query(QueryRunner qr) throws SQLException {
-        String sql = "select * from classes where id=?";
+        String sql = "select * from subscribe_user where id=?";
         for (int i = 0; i < 10000; i++) {
             Object[] arr = qr.query(sql, new ArrayHandler(), i);
         }

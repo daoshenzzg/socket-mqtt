@@ -41,7 +41,7 @@ public class MqttClientTest1 {
                 }
 
                 public void connectionLost(Throwable throwable) {
-                    logger.error("mqtt connection lost.", throwable);
+                    logger.error("server connection lost.", throwable);
                 }
 
                 public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {

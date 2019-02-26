@@ -112,7 +112,7 @@ public class Server extends Service {
 
     private String webSocketPath = "/";
 
-    private String mqttVersion = "mqtt, mqttv3.1, mqttv3.1.1";
+    private String mqttVersion = "server, mqttv3.1, mqttv3.1.1";
 
     private ScheduledExecutorService stateReportService = new ScheduledThreadPoolExecutor(
             1,

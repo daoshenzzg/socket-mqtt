@@ -41,7 +41,7 @@ public class DefaultMqttMessageEventListener implements MessageEventListener {
                     break;
                 default:
                     if (logger.isDebugEnabled()) {
-                        logger.debug("Nonsupport mqtt message  type of '{}'.", messageType);
+                        logger.debug("Nonsupport server message  type of '{}'.", messageType);
                     }
                     break;
             }
