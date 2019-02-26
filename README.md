@@ -32,7 +32,11 @@ socket-core会帮助上层服务做一下工作：
 4000客户端 Publish 单消息1024B 上行tps: 17万+，千兆网卡流量基本打满。
 备注：Mqtt Server启动内存只分配了5G，如果分配到10G，理论上可以支持百万连接。还有，测试开启了心跳上报。
 
+<img src="doc/status.png">
+
 [查看连接数(telnet serverIp 8001; get status)](doc/status.png)
+
+
 
 [查看连接数(ss -l)](doc/ss.png)
 
