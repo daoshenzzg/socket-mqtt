@@ -31,7 +31,7 @@ socket-core会帮助上层服务做一下工作：
 4000客户端 Publish 单消息1024B 上行tps: 17万+，千兆网卡流量基本打满。
 备注：Mqtt Server启动内存只分配了5G，如果分配到10G，理论上可以支持百万连接。还有，测试开启了心跳上报。
 
-### 2台测试机每台启动5000 Clients，Server单消息体1024B，推送完100万条消息的消息下行能力。
+#### 消息下行能力
 <table>
     <tr>
         <th>1万Clients订阅的消息下行能力</th>
@@ -46,7 +46,7 @@ socket-core会帮助上层服务做一下工作：
     </tr>
 </table>
 
-### 2台测试机每台启动2000 Clients，单消息体1024B，客户端并发Publish完100万条消息的消息上行能力。
+#### 消息上行能力
 <table>
     <tr>
         <th>4000Clients订阅消息上行能力</th>
@@ -61,7 +61,7 @@ socket-core会帮助上层服务做一下工作：
     </tr>
 </table>
 
-### 查看连接数情况
+#### 查看连接数情况
 <table>
     <tr>
         <th>查看连接数(telnet 10.43.204.61 8001; get status)</th>
@@ -78,7 +78,7 @@ socket-core会帮助上层服务做一下工作：
 
 # 使用说明
 
-各测试类的源码在src/test/java/com/mgtv/socket包路径下: 
+各种测试类的源码在src/test/java/com/mgtv/socket包路径下: 
 包括:
 * 普通socket Server/Client
 * MQTT socket Server/Client
@@ -86,7 +86,7 @@ socket-core会帮助上层服务做一下工作：
 * 基于内存数据库的模拟订阅推送
 
 **Server**
-```$xslt
+```java
 Server server = new Server();
 // 设置Broker端口
 server.setPort(8000); 
@@ -121,7 +121,7 @@ while (true) {
 ```
 
 **Client**
-```$xslt
+```java
 final String broker = "tcp://127.0.0.1:8000";
 final String clientId = "GID_XXX@@@ClientID_123";
 final String topic = "mgtv/notice/";
