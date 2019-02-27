@@ -85,102 +85,35 @@ socket-core会帮助上层服务做以下工作：
 * 带注册中心的普通socket/MQTT socket
 * 基于内存数据库的模拟订阅推送
 
-**Server**
+## 服务启动配置选项
 ```java
 Server server = new Server();
 // 设置Broker端口
 server.setPort(8000); 
-// 设置启动信息统计
+// 设置启动信息统计。默认true
 server.setOpenCount(true);
-// 设置启用心跳功能
+// 设置启用心跳功能。默认true
 server.setCheckHeartbeat(true);
 // 设置启动服务状态，默认端口8001。通过telnet server_ip 8001; get status查看服务信息
 server.setOpenStatus(true);
+// 服务状态端口。默认8001
+server.setStatusPort(8001);
+// 设置服务名称
+server.setServiceName("Demo");
+// 设置工作线程数量。默认CPU个数+1
+server.setWorkerCount(64);
+// 是否开户业务处理线程池。默认false
+server.setOpenExecutor(true);
+// 设置tcp no delay。默认true
+server.setTcpNoDelay(true);
+// 是否启用keepAlive。默认true
+server.setKeepAlive(true);
 // 自定义监听器，可处理相关事件
 server.addEventListener(new EchoMessageEventListener());
 // 设置Broker启动协议。SocketType.MQTT - MQTT协议； SocketType.NORMAL - 普通Socket协议；SocketType.MQTT_WS - MQTT web socket协议；
 server.setSocketType(SocketType.MQTT);
 // 绑定端口启动服务
 server.bind();
-
-//模拟推送
-JSONObject message = new JSONObject();
-message.put("action", "echo");
-message.put("message", "this is mgtv push message!");
-
-MqttRequest mqttRequest = new MqttRequest((message.toString().getBytes()));
-while (true) {
-    if (server.getChannels().size() > 0) {
-        logger.info("模拟推送消息");
-        for (WrappedChannel channel : server.getChannels().values()) {
-            server.send(channel, "mgtv/notice/", mqttRequest);
-        }
-    }
-    Thread.sleep(1000L);
-}
-```
-
-**Client**
-```java
-final String broker = "tcp://127.0.0.1:8000";
-final String clientId = "GID_XXX@@@ClientID_123";
-final String topic = "mgtv/notice/";
-MemoryPersistence persistence = new MemoryPersistence();
-try {
-    final MqttClient sampleClient = new MqttClient(broker, clientId, persistence);
-    final MqttConnectOptions connOpts = new MqttConnectOptions();
-    logger.info("Connecting to broker: {}", broker);
-    connOpts.setServerURIs(new String[]{broker});
-    connOpts.setUserName("admin");
-    connOpts.setPassword("123456".toCharArray());
-    connOpts.setCleanSession(true);
-    connOpts.setKeepAliveInterval(90);
-    connOpts.setAutomaticReconnect(true);
-    connOpts.setMqttVersion(MqttConnectOptions.MQTT_VERSION_3_1);
-    sampleClient.setCallback(new MqttCallbackExtended() {
-        public void connectComplete(boolean reconnect, String serverURI) {
-            logger.info("connect success");
-            //连接成功，需要上传客户端所有的订阅关系
-
-            try {
-                sampleClient.subscribe(topic,0);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-
-        public void connectionLost(Throwable throwable) {
-            logger.error("server connection lost.", throwable);
-        }
-
-        public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
-            logger.info("message arrived. topic={}, message={}.", topic, new String(mqttMessage.getPayload()));
-        }
-
-        public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
-            logger.info("delivery complete. messageId={}.", iMqttDeliveryToken.getMessageId());
-        }
-    });
-    sampleClient.connect(connOpts);
-    for (int i = 0; i < 3; i++) {
-        try {
-            String content = "hello world!" + i;
-            //此处消息体只需要传入 byte 数组即可，对于其他类型的消息，请自行完成二进制数据的转换
-            final MqttMessage message = new MqttMessage(content.getBytes());
-            message.setQos(0);
-            logger.info("public message '{}'", content);
-            /**
-             *消息发送到某个主题 Topic，所有订阅这个 Topic 的设备都能收到这个消息。
-             * 遵循 MQTT 的发布订阅规范，Topic 也可以是多级 Topic。此处设置了发送到二级 Topic
-             */
-            sampleClient.publish(topic, message);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-} catch (Exception me) {
-    me.printStackTrace();
-}
 ```
 
 # 后续规划
