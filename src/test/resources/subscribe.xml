@@ -8,7 +8,7 @@
 	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd 
 	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd 
 	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
-    <bean id="dataSource" class="com.mgtv.socket.datasource.HsqlDataSource">
+    <bean id="dataSource" class="com.yb.socket.datasource.HsqlDataSource">
         <property name="driverClassName" value="org.hsqldb.jdbcDriver"/>
         <property name="url" value="jdbc:hsqldb:mem:channels"/>
         <property name="username" value="admin"/>
@@ -17,7 +17,7 @@
         <property name="poolSize" value="10"/>
     </bean>
 
-    <bean id="subscribeServer" class="com.mgtv.socket.push.server.SubscribeServer">
+    <bean id="subscribeServer" class="com.yb.socket.push.server.SubscribeServer">
         <constructor-arg ref="dataSource"/>
     </bean>
 </beans>

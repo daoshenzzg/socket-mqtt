@@ -78,7 +78,7 @@ socket-core会帮助上层服务做以下工作：
 
 # 使用说明
 
-各种测试类的源码在src/test/java/com/mgtv/socket包路径下: 
+各种测试类的源码在src/test/java/com/yb/socket包路径下: 
 包括:
 * 普通socket Server/Client
 * MQTT socket Server/Client
