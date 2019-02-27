@@ -1,7 +1,7 @@
-# socket-core: Netty4.x + MQTT
+# socket-mqtt: Netty4.x + MQTT
 
 这是一个基于[Netty4.x](https://netty.io/) + [MQTT](http://mqtt.org/)实现的Push推送基础框架。相比于原生Netty，
-socket-core会帮助上层服务做以下工作：
+socket-mqtt：
 
 * 为C/S模式开发封装简单统一的编程模式
 * 简单高性能的代码
