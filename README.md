@@ -116,9 +116,134 @@ server.setSocketType(SocketType.MQTT);
 server.bind();
 ```
 
-# 后续规划
+## MQTT web socket server DEMO
+```java
+Server server = new Server();
+server.setPort(8000);
+server.addEventListener(new EchoMessageEventListener());
+server.setSocketType(SocketType.MQTT_WS);
+server.bind();
 
-TODO
+//模拟推送
+String message = "this is a web socket message!";
+MqttRequest mqttRequest = new MqttRequest((message.getBytes()));
+while (true) {
+    if (server.getChannels().size() > 0) {
+        logger.info("模拟推送消息");
+        for (WrappedChannel channel : server.getChannels().values()) {
+            server.send(channel, "yb/notice/", mqttRequest);
+        }
+    }
+    Thread.sleep(1000L);
+}
+```
+
+## MQTT web socket client(浏览器)
+```
+可用在线mqtt测试：http://www.tongxinmao.com/txm/webmqtt.php
+Topic	Payload	Time	QoS
+yb/notice/	this is a web socket message!	2019-2-27 16:54:54	0
+```
+
+## Normal socket server DEMO
+```java
+Server server = new Server();
+server.setPort(8000);
+server.addEventListener(new JsonEchoMessageEventListener());
+server.addChannelHandler("decoder", new JsonDecoder());
+server.addChannelHandler("encoder", new JsonEncoder());
+server.bind();
+
+//模拟推送
+JSONObject message = new JSONObject();
+message.put("action", "echo");
+message.put("message", "this is a normal socket message!");
+
+Request request = new Request();
+request.setSequence(0);
+request.setMessage(message);
+while (true) {
+    if (server.getChannels().size() > 0) {
+        logger.info("模拟推送消息");
+        for (WrappedChannel channel : server.getChannels().values()) {
+            channel.send(request);
+            Thread.sleep(5000L);
+        }
+    }
+}
+```
+
+## Normal socket client DEMO
+```java
+Client client = new Client();
+client.setIp("127.0.0.1");
+client.setPort(8000);
+client.setConnectTimeout(10000);
+client.addChannelHandler("decoder", new JsonDecoder());
+client.addChannelHandler("encoder", new JsonEncoder());
+client.connect();
+
+for (int i = 0; i < 2; i++) {
+    JSONObject message = new JSONObject();
+    message.put("action", "echo");
+    message.put("message", "hello world!");
+
+    Request request = new Request();
+    request.setSequence(i);
+    request.setMessage(message);
+    Response response = (Response) client.sendWithSync(request, 3000);
+
+    logger.info("成功接收到同步的返回: '{}'.", response);
+}
+
+client.shutdown();
+```
+## 带注册中心 center DEMO
+```java
+Server server = new Server();
+server.setPort(9000);
+server.setCheckHeartbeat(false);
+server.addChannelHandler("decoder", new JsonDecoder());
+server.addChannelHandler("encoder", new JsonEncoder());
+server.addEventListener(new com.yb.socket.center.CenterMockMessageEventListener());
+server.bind();
+```
+## 带注册中心 server DEMO
+```java
+Server server = new Server();
+server.setPort(8000);
+server.setCheckHeartbeat(false);
+server.setCenterAddr("127.0.0.1:9000,127.0.0.1:9010");
+server.addEventListener(new JsonEchoMessageEventListener());
+server.bind();
+```
+## 带注册中心 client DEMO
+```java
+Client client = new Client();
+client.setCheckHeartbeat(false);
+client.setCenterAddr("127.0.0.1:9000,127.0.0.1:9010");
+client.addChannelHandler("decoder", new JsonDecoder());
+client.addChannelHandler("encoder", new JsonEncoder());
+client.connect();
+
+JSONObject message = new JSONObject();
+message.put("action", "echo");
+message.put("message", "hello");
+
+for (int i = 0; i < 5; i++) {
+    Request request = new Request();
+    request.setSequence(i);
+    request.setMessage(message);
+    client.send(request);
+    Thread.sleep(5000L);
+}
+```
+
+# 后续规划
+* 支持MQTT主题过滤机制
+* 支持SSL连接方式
+* 完整的QoS服务质量等级实现DEMO
+* 遗嘱消息, 保留消息及消息分发重试
 
 # 压测工具
 
