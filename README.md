@@ -252,5 +252,5 @@ for (int i = 0; i < 5; i++) {
 # 参考项目
 
 * https://github.com/netty/netty
-* https://github.com/singgel/mqtt_iot_push
+* https://github.com/1ssqq1lxr/iot_push
 * https://github.com/Wizzercn/MqttWk
