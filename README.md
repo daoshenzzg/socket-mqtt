@@ -254,7 +254,3 @@ for (int i = 0; i < 5; i++) {
 * https://github.com/netty/netty
 * https://github.com/singgel/mqtt_iot_push
 * https://github.com/Wizzercn/MqttWk
-
-# 特别鸣谢
-
-在此特别感谢神一般的**春哥**。架构、解决问题的思路以及管理水平都让人钦佩不已，是我学习的榜样。此框架也是基于他很早之前封装netty3.x框架升级改造而来。
