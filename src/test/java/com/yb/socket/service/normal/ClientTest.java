@@ -22,7 +22,6 @@ public class ClientTest {
         client.setIp("127.0.0.1");
         client.setPort(8000);
         client.setConnectTimeout(10000);
-        client.setCheckHeartbeat(false);
         client.addChannelHandler("decoder", new JsonDecoder());
         client.addChannelHandler("encoder", new JsonEncoder());
         client.connect();
@@ -40,6 +39,6 @@ public class ClientTest {
             logger.info("成功接收到同步的返回: '{}'.", response);
         }
 
-        //client.shutdown();
+        client.shutdown();
     }
 }

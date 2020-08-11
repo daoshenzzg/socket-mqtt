@@ -19,7 +19,6 @@ public class ServerTest {
     public static void main(String[] args) throws Exception {
         Server server = new Server();
         server.setPort(8000);
-        server.setCheckHeartbeat(false);
         server.addEventListener(new JsonEchoMessageEventListener());
         server.addChannelHandler("decoder", new JsonDecoder());
         server.addChannelHandler("encoder", new JsonEncoder());
@@ -28,7 +27,7 @@ public class ServerTest {
         //模拟推送
         JSONObject message = new JSONObject();
         message.put("action", "echo");
-        message.put("message", "this is yb push message!");
+        message.put("message", "this is a normal socket message!");
 
         Request request = new Request();
         request.setSequence(0);
@@ -40,7 +39,6 @@ public class ServerTest {
                     channel.send(request);
                     Thread.sleep(5000L);
                 }
-
             }
         }
     }

@@ -31,6 +31,24 @@ socket-mqtt：
 4000客户端 Publish 单消息1024B 上行tps: 17万+，千兆网卡流量基本打满。
 备注：Mqtt Server启动内存只分配了5G，如果分配到10G，理论上可以支持百万连接。还有，测试开启了心跳上报。
 
+# Linux内核参数配置
+```
+# 允许回收TCP连接
+net.ipv4.tcp_tw_reuse = 1
+net.ipv4.tcp_tw_recycle = 1
+
+# TCP 缓冲区内存
+net.ipv4.tcp_rmem = 4096 87380 8388608
+net.ipv4.tcp_wmem = 4096 87380 8388608
+net.ipv4.tcp_mem = 94500000 915000000 927000000  
+
+# ulimits 优化
+fs.file-max = 1065353
+kernel.pid_max = 65536
+*	soft		nofile	655360  
+*	hard		nofile	655360
+```
+
 #### 消息下行能力
 <table>
     <tr>
