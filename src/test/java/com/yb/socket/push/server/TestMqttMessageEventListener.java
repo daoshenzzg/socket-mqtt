@@ -2,6 +2,7 @@ package com.yb.socket.push.server;
 
 import com.yb.socket.listener.DefaultMqttMessageEventListener;
 import com.yb.socket.service.WrappedChannel;
+import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.mqtt.*;
 import io.netty.util.AttributeKey;
 import org.slf4j.Logger;
@@ -77,5 +78,16 @@ public class TestMqttMessageEventListener extends DefaultMqttMessageEventListene
         });
 
         super.unSubscribe(channel, msg);
+    }
+
+    @Override
+    public void publish(WrappedChannel channel, MqttPublishMessage msg) {
+        String topic = msg.variableHeader().topicName();
+        ByteBuf buf = msg.content().duplicate();
+        byte[] tmp = new byte[buf.readableBytes()];
+        buf.readBytes(tmp);
+        String content = new String(tmp);
+        String clientId = (String) channel.getChannel().attr(AttributeKey.valueOf("clientId")).get();
+        logger.info("channelId={}, topic={}, message={}", clientId, topic, content);
     }
 }

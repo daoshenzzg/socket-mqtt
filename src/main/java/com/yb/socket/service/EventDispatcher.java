@@ -4,6 +4,7 @@ import com.yb.socket.listener.EventBehavior;
 import com.yb.socket.listener.ChannelEventListener;
 import com.yb.socket.listener.ExceptionEventListener;
 import com.yb.socket.listener.MessageEventListener;
+import io.netty.buffer.ByteBufHolder;
 import io.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,9 +85,12 @@ public class EventDispatcher {
             logger.error("Failed to dispatch exception event on channel '{}'.", channel.id().asShortText(), ex);
         }
     }
-    
+
     public void dispatchMessageEvent(final ChannelHandlerContext ctx, final WrappedChannel channel, final Object msg) {
         if (service.isOpenExecutor()) {
+            if (msg instanceof ByteBufHolder) {
+                ((ByteBufHolder) msg).retain();
+            }
             service.messageExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
