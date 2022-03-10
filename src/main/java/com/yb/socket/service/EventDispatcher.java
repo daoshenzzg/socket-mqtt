@@ -103,10 +103,6 @@ public class EventDispatcher {
     }
 
     public void dispatchChannelEvent(final ChannelHandlerContext ctx, final WrappedChannel channel) {
-        // 只处理通道Connected事件
-        if (!channel.isActive()) {
-            return;
-        }
         if (service.isOpenExecutor()) {
             service.channelExecutor.execute(new Runnable() {
                 @Override
