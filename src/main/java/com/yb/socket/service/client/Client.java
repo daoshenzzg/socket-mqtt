@@ -111,8 +111,8 @@ public class Client extends BaseClient {
             for (int i = 0; i < addresses.length; i++) {
                 try {
                     baseClient.setCheckHeartbeat(false);
-                    baseClient.addChannelHandler("decoder", new JsonDecoder());
-                    baseClient.addChannelHandler("encoder", new JsonEncoder());
+                    baseClient.addChannelHandler("decoder", JsonDecoder::new);
+                    baseClient.addChannelHandler("encoder", JsonEncoder::new);
                     //连接注册中心
                     ChannelFuture future = baseClient.connect(addresses[i], true);
                     future.await();

@@ -171,8 +171,8 @@ yb/notice/	this is a web socket message!	2019-2-27 16:54:54	0
 Server server = new Server();
 server.setPort(8000);
 server.addEventListener(new JsonEchoMessageEventListener());
-server.addChannelHandler("decoder", new JsonDecoder());
-server.addChannelHandler("encoder", new JsonEncoder());
+server.addChannelHandler("decoder", JsonDecoder::new);
+server.addChannelHandler("encoder", JsonEncoder::new);
 server.bind();
 
 //模拟推送
@@ -200,8 +200,8 @@ Client client = new Client();
 client.setIp("127.0.0.1");
 client.setPort(8000);
 client.setConnectTimeout(10000);
-client.addChannelHandler("decoder", new JsonDecoder());
-client.addChannelHandler("encoder", new JsonEncoder());
+client.addChannelHandler("decoder", JsonDecoder::new);
+client.addChannelHandler("encoder", JsonEncoder::new);
 client.connect();
 
 for (int i = 0; i < 2; i++) {
@@ -224,8 +224,8 @@ client.shutdown();
 Server server = new Server();
 server.setPort(9000);
 server.setCheckHeartbeat(false);
-server.addChannelHandler("decoder", new JsonDecoder());
-server.addChannelHandler("encoder", new JsonEncoder());
+server.addChannelHandler("decoder", JsonDecoder::new);
+server.addChannelHandler("encoder", JsonEncoder::new);
 server.addEventListener(new com.yb.socket.center.CenterMockMessageEventListener());
 server.bind();
 ```
@@ -243,8 +243,8 @@ server.bind();
 Client client = new Client();
 client.setCheckHeartbeat(false);
 client.setCenterAddr("127.0.0.1:9000,127.0.0.1:9010");
-client.addChannelHandler("decoder", new JsonDecoder());
-client.addChannelHandler("encoder", new JsonEncoder());
+client.addChannelHandler("decoder", JsonDecoder::new);
+client.addChannelHandler("encoder", JsonEncoder::new);
 client.connect();
 
 JSONObject message = new JSONObject();

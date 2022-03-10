@@ -20,8 +20,8 @@ public class ServerTest {
         Server server = new Server();
         server.setPort(8000);
         server.addEventListener(new JsonEchoMessageEventListener());
-        server.addChannelHandler("decoder", new JsonDecoder());
-        server.addChannelHandler("encoder", new JsonEncoder());
+        server.addChannelHandler("decoder", JsonDecoder::new);
+        server.addChannelHandler("encoder", JsonEncoder::new);
         server.bind();
 
         //模拟推送

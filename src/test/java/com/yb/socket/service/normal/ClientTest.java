@@ -22,8 +22,8 @@ public class ClientTest {
         client.setIp("127.0.0.1");
         client.setPort(8000);
         client.setConnectTimeout(10000);
-        client.addChannelHandler("decoder", new JsonDecoder());
-        client.addChannelHandler("encoder", new JsonEncoder());
+        client.addChannelHandler("decoder", JsonDecoder::new);
+        client.addChannelHandler("encoder", JsonEncoder::new);
         client.connect();
 
         for (int i = 0; i < 2; i++) {

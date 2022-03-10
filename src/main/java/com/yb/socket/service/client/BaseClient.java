@@ -129,9 +129,9 @@ public class BaseClient extends Service {
                 ChannelPipeline pipeline = ch.pipeline();
 
                 // 注册各种自定义Handler
-                LinkedHashMap<String, ChannelHandler> handlers = getHandlers();
+                LinkedHashMap<String, ChannelHandlerFunc> handlers = getHandlers();
                 for (String key : handlers.keySet()) {
-                    pipeline.addLast(key, handlers.get(key));
+                    pipeline.addLast(key, handlers.get(key).newInstance());
                 }
 
                 if (socketType.equals(SocketType.MQTT_WS)) {

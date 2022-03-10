@@ -89,7 +89,7 @@ public abstract class Service {
     protected IdleStateHandler timeoutHandler;
     protected ChannelInboundHandlerAdapter heartbeatHandler;
 
-    protected LinkedHashMap<String, ChannelHandler> handlers = new LinkedHashMap<>();
+    protected LinkedHashMap<String, ChannelHandlerFunc> handlers = new LinkedHashMap<>();
     protected List<EventListener> eventListeners = new ArrayList<>();
 
     protected EventDispatcher eventDispatcher;
@@ -184,15 +184,15 @@ public abstract class Service {
         this.eventListeners.add(listener);
     }
 
-    public void addChannelHandler(String key, ChannelHandler handler) {
+    public void addChannelHandler(String key, ChannelHandlerFunc handler) {
         this.handlers.put(key, handler);
     }
 
-    public LinkedHashMap<String, ChannelHandler> getHandlers() {
+    public LinkedHashMap<String, ChannelHandlerFunc> getHandlers() {
         return handlers;
     }
 
-    public void setHandlers(LinkedHashMap<String, ChannelHandler> handlers) {
+    public void setHandlers(LinkedHashMap<String, ChannelHandlerFunc> handlers) {
         this.handlers = handlers;
     }
 

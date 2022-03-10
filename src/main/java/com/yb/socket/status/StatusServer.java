@@ -1,5 +1,6 @@
 package com.yb.socket.status;
 
+import com.yb.socket.service.ChannelHandlerFunc;
 import com.yb.socket.service.server.Server;
 import com.yb.socket.service.server.ServerDispatchHandler;
 import io.netty.bootstrap.ServerBootstrap;
@@ -36,9 +37,9 @@ public class StatusServer extends Server {
         super.init();
 
 
-        this.addChannelHandler("framer", new DelimiterBasedFrameDecoder(1024, Delimiters.lineDelimiter()));
-        this.addChannelHandler("decoder", new StringDecoder());
-        this.addChannelHandler("encoder", new StringEncoder());
+        this.addChannelHandler("framer", () -> new DelimiterBasedFrameDecoder(1024, Delimiters.lineDelimiter()));
+        this.addChannelHandler("decoder", StringDecoder::new);
+        this.addChannelHandler("encoder", StringEncoder::new);
         this.addEventListener(new StatusMessageEventListener());
     }
 
@@ -57,9 +58,9 @@ public class StatusServer extends Server {
                 ChannelPipeline pipeline = ch.pipeline();
 
                 // 注册各种自定义Handler
-                LinkedHashMap<String, ChannelHandler> handlers = getHandlers();
+                LinkedHashMap<String, ChannelHandlerFunc> handlers = getHandlers();
                 for (String key : handlers.keySet()) {
-                    pipeline.addLast(key, handlers.get(key));
+                    pipeline.addLast(key, handlers.get(key).newInstance());
                 }
                 //注册事件分发Handler
                 ServerDispatchHandler dispatchHandler = new ServerDispatchHandler(eventDispatcher);

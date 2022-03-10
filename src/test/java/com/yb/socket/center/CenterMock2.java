@@ -15,8 +15,8 @@ public class CenterMock2 {
         Server server = new Server();
         server.setPort(9010);
         server.setCheckHeartbeat(false);
-        server.addChannelHandler("decoder", new JsonDecoder());
-        server.addChannelHandler("encoder", new JsonEncoder());
+        server.addChannelHandler("decoder", JsonDecoder::new);
+        server.addChannelHandler("encoder", JsonEncoder::new);
         server.addEventListener(new com.yb.socket.center.CenterMockMessageEventListener());
         server.bind();
     }

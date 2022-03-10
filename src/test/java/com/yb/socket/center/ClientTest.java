@@ -16,8 +16,8 @@ public class ClientTest {
         Client client = new Client();
         client.setCheckHeartbeat(false);
         client.setCenterAddr("127.0.0.1:9000,127.0.0.1:9010");
-        client.addChannelHandler("decoder", new JsonDecoder());
-        client.addChannelHandler("encoder", new JsonEncoder());
+        client.addChannelHandler("decoder", JsonDecoder::new);
+        client.addChannelHandler("encoder", JsonEncoder::new);
         client.connect();
 
         JSONObject message = new JSONObject();

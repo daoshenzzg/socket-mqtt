@@ -192,9 +192,9 @@ public class Server extends Service {
                 ChannelPipeline pipeline = ch.pipeline();
 
                 // 注册各种自定义Handler
-                LinkedHashMap<String, ChannelHandler> handlers = getHandlers();
+                LinkedHashMap<String, ChannelHandlerFunc> handlers = getHandlers();
                 for (String key : handlers.keySet()) {
-                    pipeline.addLast(key, handlers.get(key));
+                    pipeline.addLast(key, handlers.get(key).newInstance());
                 }
 
                 if (socketType.equals(SocketType.NORMAL)) {
@@ -275,8 +275,8 @@ public class Server extends Service {
 
         final Client client = new Client();
         client.setCheckHeartbeat(true);
-        client.addChannelHandler("jsonDecoder", new JsonDecoder());
-        client.addChannelHandler("jsonEncoder", new JsonEncoder());
+        client.addChannelHandler("jsonDecoder", JsonDecoder::new);
+        client.addChannelHandler("jsonEncoder", JsonEncoder::new);
 
         SocketAddress[] centers = AddressUtil.parseAddress(centerAddr);
         if (centers == null || centers.length < 1) {
