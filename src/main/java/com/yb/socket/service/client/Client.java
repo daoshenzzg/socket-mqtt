@@ -49,11 +49,11 @@ public class Client extends BaseClient {
     }
 
     public ChannelFuture connect(boolean sync) {
-        SocketAddress socketAddress = null;
+        SocketAddress socketAddress;
         if (serverList == null) {
             if (StringUtils.isBlank(centerAddr)) {
                 socketAddress = new InetSocketAddress(ip, port);
-                serverList = new ArrayList<SocketAddress>();
+                serverList = new ArrayList<>();
                 serverList.add(socketAddress);
             } else {
                 if (serverList == null) {
@@ -177,7 +177,7 @@ public class Client extends BaseClient {
                             throw new Exception(future.cause());
                         }
                     } catch (Exception ex) {
-                        logger.error("尝试第 {} 次重连到 '{}' 失败!", new Object[] { i, curServer, ex });
+                        logger.error("尝试第 {} 次重连到 '{}' 失败!", i, curServer, ex);
                     }
                 }
 

@@ -78,21 +78,18 @@ public class BaseClient extends Service {
         curServer = socketAddress;
         try {
             ChannelFuture future = bootstrap.connect(socketAddress).sync();
-            future.addListener(new ChannelFutureListener() {
-                @Override
-                public void operationComplete(ChannelFuture ch) throws Exception {
-                    ch.await();
-                    if (ch.isSuccess()) {
-                        channel = new WrappedChannel(ch.channel());
-                        if (logger.isDebugEnabled()) {
-                            logger.debug("Connect to '{}' success.", socketAddress);
-                        }
-                    } else {
-                        logger.error("Failed to connect to '{}', caused by: '{}'.", socketAddress, ch.cause());
+            future.addListener((ChannelFutureListener) ch -> {
+                ch.await();
+                if (ch.isSuccess()) {
+                    channel = new WrappedChannel(ch.channel());
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Connect to '{}' success.", socketAddress);
                     }
-
-                    semaphore.release(Integer.MAX_VALUE - semaphore.availablePermits());
+                } else {
+                    logger.error("Failed to connect to '{}', caused by: '{}'.", socketAddress, ch.cause());
                 }
+
+                semaphore.release(Integer.MAX_VALUE - semaphore.availablePermits());
             });
             future.channel().closeFuture();
 

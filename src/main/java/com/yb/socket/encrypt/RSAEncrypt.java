@@ -24,13 +24,13 @@ public class RSAEncrypt extends BaseEncrypt implements Encrypt {
     public RSAEncrypt(String privateKey, String publicKey)
             throws Exception {
         byte[] bytes = Base64.getDecoder().decode(privateKey);
-        PKCS8EncodedKeySpec pri_keySpec = new PKCS8EncodedKeySpec(bytes);
+        PKCS8EncodedKeySpec priKeySpec = new PKCS8EncodedKeySpec(bytes);
         KeyFactory kf = KeyFactory.getInstance("RSA");
-        this.privateKey = kf.generatePrivate(pri_keySpec);
+        this.privateKey = kf.generatePrivate(priKeySpec);
 
         bytes = Base64.getDecoder().decode(publicKey);
-        X509EncodedKeySpec pub_keySpec = new X509EncodedKeySpec(bytes);
-        this.publicKey = kf.generatePublic(pub_keySpec);
+        X509EncodedKeySpec pubKeySpec = new X509EncodedKeySpec(bytes);
+        this.publicKey = kf.generatePublic(pubKeySpec);
     }
 
     @Override
@@ -56,8 +56,7 @@ public class RSAEncrypt extends BaseEncrypt implements Encrypt {
         // 密钥位数
         keyPairGen.initialize(length);
         // 密钥对
-        KeyPair keyPair = keyPairGen.generateKeyPair();
-        return keyPair;
+        return keyPairGen.generateKeyPair();
     }
 
     public static void main(String[] args) throws Exception {

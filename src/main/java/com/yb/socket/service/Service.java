@@ -108,7 +108,7 @@ public abstract class Service {
                     this.maximumPoolSize,
                     60L,
                     TimeUnit.SECONDS,
-                    new LinkedBlockingQueue<Runnable>(this.queueCapacity),
+                    new LinkedBlockingQueue<>(this.queueCapacity),
                     new BasicThreadFactory.Builder().namingPattern("MessageEventProcessor-%d").daemon(true).build(),
                     new ThreadPoolExecutor.AbortPolicy());
 
@@ -133,10 +133,8 @@ public abstract class Service {
         this.messageExecutor = executor;
 
         List<Runnable> tasks = preExecutor.shutdownNow();
-        if (tasks != null && tasks.size() > 0) {
-            for (Runnable task : tasks) {
-                this.messageExecutor.execute(task);
-            }
+        for (Runnable task : tasks) {
+            this.messageExecutor.execute(task);
         }
     }
 
@@ -204,7 +202,7 @@ public abstract class Service {
 
     public void setListeners(List<EventListener> listeners) {
         if (listeners == null) {
-            listeners = new ArrayList<EventListener>();
+            listeners = new ArrayList<>();
         }
         eventListeners = listeners;
     }

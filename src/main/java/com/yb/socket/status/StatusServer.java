@@ -68,7 +68,7 @@ public class StatusServer extends Server {
         });
 
         // 监听端口
-        InetSocketAddress socketAddress = null;
+        InetSocketAddress socketAddress;
         if (StringUtils.isBlank(ip)) {
             socketAddress = new InetSocketAddress(port);
         } else {
@@ -78,15 +78,12 @@ public class StatusServer extends Server {
         ChannelFuture future = bootstrap.bind(socketAddress);
 
         InetSocketAddress sockAddr = socketAddress;
-        future.addListener(new ChannelFutureListener() {
-            @Override
-            public void operationComplete(ChannelFuture ch) throws Exception {
-                ch.await();
-                if (ch.isSuccess()) {
-                    logger.info("Status Server started, listening on '{}.", sockAddr);
-                } else {
-                    logger.error("Failed to start status server '{}', caused by: '{}'.", sockAddr, ch.cause());
-                }
+        future.addListener((ChannelFutureListener) ch -> {
+            ch.await();
+            if (ch.isSuccess()) {
+                logger.info("Status Server started, listening on '{}.", sockAddr);
+            } else {
+                logger.error("Failed to start status server '{}', caused by: '{}'.", sockAddr, ch.cause());
             }
         });
 

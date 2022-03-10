@@ -10,7 +10,7 @@ import com.yb.socket.service.server.Server;
  */
 public class CenterMock1 {
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         Server server = new Server();
         server.setPort(9000);
         server.setCheckHeartbeat(false);

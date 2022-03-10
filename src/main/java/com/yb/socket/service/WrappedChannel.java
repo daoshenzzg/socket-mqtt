@@ -25,15 +25,12 @@ public class WrappedChannel implements Channel {
     private Channel channel;
     private ConcurrentHashMap<Integer, InvokeFuture> futures = new ConcurrentHashMap<>();
 
-    private final ChannelFutureListener sendSuccessListener = new ChannelFutureListener() {
-        @Override
-        public void operationComplete(ChannelFuture future) throws Exception {
-            if (future.isSuccess()) {
-                Server server = ServerContext.getContext().getServer();
-                if (server != null) {
-                    server.getCountInfo().getSentNum().incrementAndGet();
-                    server.getCountInfo().setLastSent(System.currentTimeMillis());
-                }
+    private final ChannelFutureListener sendSuccessListener = future -> {
+        if (future.isSuccess()) {
+            Server server = ServerContext.getContext().getServer();
+            if (server != null) {
+                server.getCountInfo().getSentNum().incrementAndGet();
+                server.getCountInfo().setLastSent(System.currentTimeMillis());
             }
         }
     };
@@ -58,13 +55,10 @@ public class WrappedChannel implements Channel {
 
             // 发送Request对象
             ChannelFuture channelFuture = writeAndFlush(message);
-            channelFuture.addListener(new ChannelFutureListener() {
-                @Override
-                public void operationComplete(ChannelFuture future) throws Exception {
-                    if (!future.isSuccess()) {
-                        futures.remove(message.getSequence());
-                        invokeFuture.setCause(future.cause());
-                    }
+            channelFuture.addListener((ChannelFutureListener) future -> {
+                if (!future.isSuccess()) {
+                    futures.remove(message.getSequence());
+                    invokeFuture.setCause(future.cause());
                 }
             });
         } catch (Throwable ex) {

@@ -229,15 +229,12 @@ public class Server extends Service {
 
         final InetSocketAddress socketAddress = new InetSocketAddress(port);
         ChannelFuture future = bootstrap.bind(socketAddress);
-        future.addListener(new ChannelFutureListener() {
-            @Override
-            public void operationComplete(ChannelFuture ch) throws Exception {
-                ch.await();
-                if (ch.isSuccess()) {
-                    logger.info("Server started, listening on '{}.", socketAddress);
-                } else {
-                    logger.error("Failed to start Server '{}', caused by: '{}'.", socketAddress, ch.cause());
-                }
+        future.addListener((ChannelFutureListener) ch -> {
+            ch.await();
+            if (ch.isSuccess()) {
+                logger.info("Server started, listening on '{}.", socketAddress);
+            } else {
+                logger.error("Failed to start Server '{}', caused by: '{}'.", socketAddress, ch.cause());
             }
         });
 
@@ -295,63 +292,60 @@ public class Server extends Service {
         client.setServerList(serverList);
 
         centerConnectTimer = Executors.newScheduledThreadPool(1);
-        centerConnectTimer.scheduleAtFixedRate(new Runnable() {
-            @Override
-            public void run() {
-                if (!registered.get() || (client.getChannel() == null) || !client.getChannel().isActive()) {
-                    retryTimes.incrementAndGet();
-                    registered.set(false);
+        centerConnectTimer.scheduleAtFixedRate(() -> {
+            if (!registered.get() || (client.getChannel() == null) || !client.getChannel().isActive()) {
+                retryTimes.incrementAndGet();
+                registered.set(false);
 
-                    try {
-                        long startTime = System.currentTimeMillis();
+                try {
+                    long startTime = System.currentTimeMillis();
 
-                        Channel channel = client.getChannel();
-                        if (channel == null) {
-                            logger.warn("Current center channel in server '{}' is invalid, try to reconnect to register " + "center. Current retry times: {}.",
-                                    serviceName, retryTimes.get());
+                    Channel channel = client.getChannel();
+                    if (channel == null) {
+                        logger.warn("Current center channel in server '{}' is invalid, try to reconnect to register " + "center. Current retry times: {}.",
+                                serviceName, retryTimes.get());
 
-                            channel = client.connect().channel();
-                        }
-
-                        if (channel == null) {
-                            logger.warn("Server '{}' can not connect to register center '{}'. Current retry times: {}.",
-                                    new Object[]{serviceName, client.getCurServer(), retryTimes.get()});
-                            return;
-                        }
-
-                        logger.info("Server '{}' connected to center '{}'. Current retry times: {}, time cost: {} ms.",
-                                new Object[]{serviceName, client.getCurServer(), retryTimes.get(), (System.currentTimeMillis() - startTime)});
-
-                        Request request = new Request();
-                        request.setSequence(Sequence.getInstance().addAndGet("CENTER_CLIENT"));
-
-                        JSONObject json = new JSONObject();
-                        json.put("action", "register");
-                        json.put("service", serviceName);
-                        json.put("heartTime", server.getReaderIdleTimeSeconds() / 3);
-                        json.put("ip", ip);
-                        json.put("port", port);
-                        request.setMessage(json.toString());
-
-                        logger.info("Server '{}' tries to send request to register center using sequence '{}'. Current retry times: {}.",
-                                serviceName, request.getSequence(), retryTimes.get());
-
-                        startTime = System.currentTimeMillis();
-
-                        Response response = client.sendWithSync(request);
-                        if (response == null || Response.SUCCESS != response.getCode()) {
-                            logger.warn("Server '{}' failed to register to center using sequence '{}'. Current retry times: {}.", serviceName,
-                                    request.getSequence(), retryTimes.get());
-                            return;
-                        }
-
-                        registered.set(true);
-
-                        logger.info("Server '{}' registered to center using sequence '{}'. Current retry times: {}, time cost: {} ms.",
-                                serviceName, request.getSequence(), retryTimes.get(), (System.currentTimeMillis() - startTime));
-                    } catch (Throwable ex) {
-                        logger.error("Server '{}' failed to register to center. Current retry times: {}.", serviceName, retryTimes.get(), ex);
+                        channel = client.connect().channel();
                     }
+
+                    if (channel == null) {
+                        logger.warn("Server '{}' can not connect to register center '{}'. Current retry times: {}.",
+                                serviceName, client.getCurServer(), retryTimes.get());
+                        return;
+                    }
+
+                    logger.info("Server '{}' connected to center '{}'. Current retry times: {}, time cost: {} ms.",
+                            serviceName, client.getCurServer(), retryTimes.get(), (System.currentTimeMillis() - startTime));
+
+                    Request request = new Request();
+                    request.setSequence(Sequence.getInstance().addAndGet("CENTER_CLIENT"));
+
+                    JSONObject json = new JSONObject();
+                    json.put("action", "register");
+                    json.put("service", serviceName);
+                    json.put("heartTime", server.getReaderIdleTimeSeconds() / 3);
+                    json.put("ip", ip);
+                    json.put("port", port);
+                    request.setMessage(json.toString());
+
+                    logger.info("Server '{}' tries to send request to register center using sequence '{}'. Current retry times: {}.",
+                            serviceName, request.getSequence(), retryTimes.get());
+
+                    startTime = System.currentTimeMillis();
+
+                    Response response = client.sendWithSync(request);
+                    if (response == null || Response.SUCCESS != response.getCode()) {
+                        logger.warn("Server '{}' failed to register to center using sequence '{}'. Current retry times: {}.", serviceName,
+                                request.getSequence(), retryTimes.get());
+                        return;
+                    }
+
+                    registered.set(true);
+
+                    logger.info("Server '{}' registered to center using sequence '{}'. Current retry times: {}, time cost: {} ms.",
+                            serviceName, request.getSequence(), retryTimes.get(), (System.currentTimeMillis() - startTime));
+                } catch (Throwable ex) {
+                    logger.error("Server '{}' failed to register to center. Current retry times: {}.", serviceName, retryTimes.get(), ex);
                 }
             }
         }, centerReConnectTimerInterval, centerReConnectTimerInterval, TimeUnit.MILLISECONDS);
@@ -392,7 +386,8 @@ public class Server extends Service {
     }
 
     public boolean useMqtt() {
-        return socketType.equals(SocketType.MQTT) || socketType.equals(SocketType.MQTT_WS);
+        return socketType.equals(SocketType.MQTT)
+                || socketType.equals(SocketType.MQTT_WS);
     }
 
     public Map<String, WrappedChannel> getChannels() {

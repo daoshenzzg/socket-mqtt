@@ -12,5 +12,5 @@ public enum EventBehavior {
     /**
      * 停止消息传递
      */
-    BREAK;
+    BREAK
 }

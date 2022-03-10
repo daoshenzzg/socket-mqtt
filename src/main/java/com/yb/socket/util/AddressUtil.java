@@ -14,10 +14,10 @@ import java.net.UnknownHostException;
 public class AddressUtil {
 
     public static String getLocalIp() {
-        InetAddress address = null;
+        InetAddress address;
         try {
             address = InetAddress.getLocalHost();
-            return address.getHostAddress().toString();
+            return address.getHostAddress();
         } catch (UnknownHostException ex) {
             throw new RuntimeException(ex);
         }

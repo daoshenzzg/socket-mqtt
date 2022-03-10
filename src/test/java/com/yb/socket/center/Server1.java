@@ -9,7 +9,7 @@ import com.yb.socket.service.server.Server;
  */
 public class Server1 {
 
-    public static void main(String[] args) throws Exception{
+    public static void main(String[] args) {
         Server server = new Server();
         server.setPort(8000);
         server.setCheckHeartbeat(false);

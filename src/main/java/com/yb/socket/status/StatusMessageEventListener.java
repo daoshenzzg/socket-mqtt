@@ -104,7 +104,7 @@ public class StatusMessageEventListener implements MessageEventListener {
     }
 
     private Map<String, Object> doGetConfig() {
-        Map<String, Object> resultMap = new LinkedHashMap<String, Object>();
+        Map<String, Object> resultMap = new LinkedHashMap<>();
         Server busServer = ServerContext.getContext().getServer();
         if (busServer != null) {
             //ip
@@ -115,8 +115,6 @@ public class StatusMessageEventListener implements MessageEventListener {
             resultMap.put("keepAlive", busServer.isKeepAlive());
             //tcpNoDelay
             resultMap.put("tcpNoDelay", busServer.isTcpNoDelay());
-            //workerCount
-            //resultMap.put("workerCount", busServer.getWorkerCount());
             //executorFlag
             resultMap.put("executorFlag", busServer.isOpenExecutor());
             if (busServer.isOpenExecutor()) {

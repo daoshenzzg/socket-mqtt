@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 public class ClientTest {
     private static final Logger logger = LoggerFactory.getLogger(ClientTest.class);
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
 
         Client client = new Client();
         client.setIp("127.0.0.1");
@@ -34,7 +34,7 @@ public class ClientTest {
             Request request = new Request();
             request.setSequence(i);
             request.setMessage(message);
-            Response response = (Response) client.sendWithSync(request, 3000);
+            Response response = client.sendWithSync(request, 3000);
 
             logger.info("成功接收到同步的返回: '{}'.", response);
         }

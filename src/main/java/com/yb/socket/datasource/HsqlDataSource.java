@@ -37,7 +37,7 @@ public class HsqlDataSource implements DataSource {
     private String tableScript;
     private boolean inited = false;
 
-    private LinkedList<Connection> connectionPool = new LinkedList<Connection>();
+    private LinkedList<Connection> connectionPool = new LinkedList<>();
 
     public HsqlDataSource() {
     }

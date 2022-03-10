@@ -26,7 +26,7 @@ public class EchoMessageEventListener extends DefaultMqttMessageEventListener {
         MqttPublishMessage sendMessage = (MqttPublishMessage) MqttMessageFactory.newMessage(
                 new MqttFixedHeader(MqttMessageType.PUBLISH, false, MqttQoS.AT_MOST_ONCE, false, 0),
                 new MqttPublishVariableHeader(topic, 0),
-                Unpooled.buffer().writeBytes(new String(content.toUpperCase()).getBytes()));
+                Unpooled.buffer().writeBytes(content.toUpperCase().getBytes()));
         channel.writeAndFlush(sendMessage);
     }
 }

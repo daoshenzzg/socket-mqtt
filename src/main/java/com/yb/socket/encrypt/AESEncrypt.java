@@ -14,7 +14,7 @@ import java.security.spec.KeySpec;
 public class AESEncrypt extends BaseEncrypt implements Encrypt {
     private static final String CIPHER_TRIPLE_AES = "AES/ECB/PKCS5Padding";
     private static final byte[] salt = { (byte) 0xA4, (byte) 0x0B, (byte) 0xC8, (byte) 0x34, (byte) 0xD6, (byte) 0x95, (byte) 0xF3, (byte) 0x13 };
-    private SecretKey secret = null;
+    private SecretKey secret;
 
     public AESEncrypt(String password, int length) throws Exception{
         SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
