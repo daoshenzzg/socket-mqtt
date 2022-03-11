@@ -76,15 +76,15 @@ public abstract class Service {
     /**
      * 心跳检查时的读空闲时间
      */
-    protected int readerIdleTimeSeconds = 0;
+    protected int readerIdleTimeSeconds = 30;
     /**
      * 心跳检查时的写空闲时间
      */
-    protected int writerIdleTimeSeconds = 0;
+    protected int writerIdleTimeSeconds = 10;
     /**
      * 心跳检查时的读写空闲时间
      */
-    protected int allIdleTimeSeconds = 90;
+    protected int allIdleTimeSeconds = 0;
 
     protected IdleStateHandler timeoutHandler;
     protected ChannelInboundHandlerAdapter heartbeatHandler;
