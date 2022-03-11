@@ -86,7 +86,6 @@ public abstract class Service {
      */
     protected int allIdleTimeSeconds = 0;
 
-    protected IdleStateHandler timeoutHandler;
     protected ChannelInboundHandlerAdapter heartbeatHandler;
 
     protected LinkedHashMap<String, ChannelHandlerFunc> handlers = new LinkedHashMap<>();
