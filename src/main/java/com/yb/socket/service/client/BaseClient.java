@@ -61,7 +61,6 @@ public class BaseClient extends Service {
         super.init();
         // 将一些handler放在这里初始化是为了防止多例的产生。
         if (checkHeartbeat) {
-            timeoutHandler = new IdleStateHandler(readerIdleTimeSeconds, writerIdleTimeSeconds, allIdleTimeSeconds);
             heartbeatHandler = new ClientHeartbeatHandler();
         }
 
@@ -141,6 +140,8 @@ public class BaseClient extends Service {
                 }
 
                 if (checkHeartbeat) {
+                    IdleStateHandler timeoutHandler = new IdleStateHandler(readerIdleTimeSeconds,
+                            writerIdleTimeSeconds, allIdleTimeSeconds);
                     pipeline.addLast("timeout", timeoutHandler);
                     pipeline.addLast("idleHandler", heartbeatHandler);
                 }

@@ -166,7 +166,6 @@ public class Server extends Service {
 
         // 将一些handler放在这里初始化是为了防止多例的产生。
         if (checkHeartbeat) {
-            timeoutHandler = new IdleStateHandler(readerIdleTimeSeconds, writerIdleTimeSeconds, allIdleTimeSeconds);
             heartbeatHandler = new ServerHeartbeatHandler();
         }
         eventDispatcher = new EventDispatcher(this);
@@ -197,15 +196,12 @@ public class Server extends Service {
                     pipeline.addLast(key, handlers.get(key).newInstance());
                 }
 
-                if (socketType.equals(SocketType.NORMAL)) {
-                    if (checkHeartbeat) {
-                        pipeline.addLast("timeoutHandler", timeoutHandler);
-                        pipeline.addLast("heartbeatHandler", heartbeatHandler);
-                    }
-                } else if (socketType.equals(SocketType.MQTT)) {
+                if (socketType.equals(SocketType.MQTT)) {
                     pipeline.addLast("mqttDecoder", new MqttDecoder());
                     pipeline.addLast("mqttEncoder", MqttEncoder.INSTANCE);
-                } else if (socketType.equals(SocketType.MQTT_WS)) {
+                }
+
+                if (socketType.equals(SocketType.MQTT_WS)) {
                     pipeline.addLast("httpServerCodec", new HttpServerCodec());
                     pipeline.addLast("httpObjectAggregator", new HttpObjectAggregator(65536));
                     pipeline.addLast("mqttWebSocketCodec", new MqttWebSocketCodec());
@@ -214,6 +210,13 @@ public class Server extends Service {
 
                     WebSocketServerProtocolHandler webSocketHandler = new WebSocketServerProtocolHandler(webSocketPath, mqttVersion);
                     pipeline.addLast("webSocketHandler", webSocketHandler);
+                }
+
+                if (checkHeartbeat) {
+                    IdleStateHandler timeoutHandler = new IdleStateHandler(readerIdleTimeSeconds,
+                            writerIdleTimeSeconds, allIdleTimeSeconds);
+                    pipeline.addLast("timeoutHandler", timeoutHandler);
+                    pipeline.addLast("heartbeatHandler", heartbeatHandler);
                 }
 
                 // 注册事件分发Handler
