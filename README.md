@@ -15,8 +15,6 @@ socket-mqtt：
 - 提供数据统计/监控组件
 - 支持普通socket、MQTT、MQTT web socket协议及[自定义协议](src/main/java/com/yb/socket/pojo/protocol/README.md)
 
-socket-mqtt自定义消息协议已用于生产环境。
-
 # 项目结构
 
 - codec: 封装编码与解码
