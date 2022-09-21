@@ -157,7 +157,14 @@ server.bind();
 String message = "this is a web socket message!";  
 MqttRequest mqttRequest = new MqttRequest((message.getBytes()));  
 while (true) {  
-    if (server.getChannels().size() > 0) {        logger.info("模拟推送消息");        for (WrappedChannel channel : server.getChannels().values()) {            server.send(channel, "yb/notice/", mqttRequest);        }    }    Thread.sleep(1000L);}  
+    if (server.getChannels().size() > 0) { 
+        logger.info("模拟推送消息");     
+        for (WrappedChannel channel : server.getChannels().values()) {  
+            server.send(channel, "yb/notice/", mqttRequest);     
+        }
+    } 
+    Thread.sleep(1000L);
+}  
 ```
 
 ## MQTT web socket client(浏览器)
@@ -187,7 +194,14 @@ Request request = new Request();
 request.setSequence(0);  
 request.setMessage(message);  
 while (true) {  
-    if (server.getChannels().size() > 0) {        logger.info("模拟推送消息");        for (WrappedChannel channel : server.getChannels().values()) {            channel.send(request);            Thread.sleep(5000L);        }    }}  
+    if (server.getChannels().size() > 0) {  
+        logger.info("模拟推送消息");     
+        for (WrappedChannel channel : server.getChannels().values()) {
+            channel.send(request);
+            Thread.sleep(5000L);
+        }
+    }
+}  
 ```
 
 ## Normal socket client DEMO
@@ -202,9 +216,16 @@ client.addChannelHandler("encoder", JsonEncoder::new);
 client.connect();  
 
 for (int i = 0; i < 2; i++) {  
-    JSONObject message = new JSONObject();    message.put("action", "echo");    message.put("message", "hello world!");  
-    Request request = new Request();    request.setSequence(i);    request.setMessage(message);    Response response = (Response) client.sendWithSync(request, 3000);  
-    logger.info("成功接收到同步的返回: '{}'.", response);}  
+    JSONObject message = new JSONObject();   
+    message.put("action", "echo"); 
+    message.put("message", "hello world!");  
+    Request request = new Request();  
+    request.setSequence(i); 
+    request.setMessage(message);
+    Response response = (Response) 
+    client.sendWithSync(request, 3000);  
+    logger.info("成功接收到同步的返回: '{}'.", response);
+}  
 
 client.shutdown();  
 ```
@@ -247,7 +268,12 @@ message.put("action", "echo");
 message.put("message", "hello");  
 
 for (int i = 0; i < 5; i++) {  
-    Request request = new Request();    request.setSequence(i);    request.setMessage(message);    client.send(request);    Thread.sleep(5000L);}  
+    Request request = new Request();  
+    request.setSequence(i);
+    request.setMessage(message);
+    client.send(request);
+    Thread.sleep(5000L);
+}  
 ```
 
 # 后续规划
