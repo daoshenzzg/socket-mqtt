@@ -30,8 +30,8 @@ socket-mqtt：
 
 ```
 # 允许回收TCP连接  
-net.ipv4.tcp_tw_reuse = 1  
-net.ipv4.tcp_tw_recycle = 1  
+net.ipv4.tcp_tw_reuse = 0  
+net.ipv4.tcp_tw_recycle = 0  
 
 # TCP 缓冲区内存  
 net.ipv4.tcp_rmem = 4096 87380 8388608  
